@@ -1,6 +1,20 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+import psycopg2
+import os
 
 app = Flask(__name__)
+
+
+def get_db_connection():
+    connection = psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD")
+    )
+
+    return connection
 
 
 @app.route("/api")
@@ -10,11 +24,66 @@ def home():
     })
 
 
-@app.route("/health")
-def health():
+@app.route("/products", methods=["GET"])
+def get_products():
+
+    connection = get_db_connection()
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "SELECT id, name, price FROM products ORDER BY id"
+    )
+
+    products = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    result = []
+
+    for product in products:
+        result.append({
+            "id": product[0],
+            "name": product[1],
+            "price": float(product[2])
+        })
+
+    return jsonify(result)
+
+
+@app.route("/products", methods=["POST"])
+def create_product():
+
+    data = request.get_json()
+
+    name = data["name"]
+    price = data["price"]
+
+    connection = get_db_connection()
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "INSERT INTO products (name, price) VALUES (%s, %s) RETURNING id",
+        (name, price)
+    )
+
+    product_id = cursor.fetchone()[0]
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
     return jsonify({
-        "status": "healthy"
-    })
+        "message": "Product created successfully",
+        "id": product_id
+    }), 201
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(
+        host="0.0.0.0",
+        port=5000
+    )
