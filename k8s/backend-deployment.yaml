@@ -28,18 +28,9 @@ spec:
           ports:
             - containerPort: 5000
 
-          env:
-            - name: DB_HOST
-              value: "postgres-service"
+          envFrom:
+            - configMapRef:
+                name: backend-config
 
-            - name: DB_PORT
-              value: "5432"
-
-            - name: DB_NAME
-              value: "ecommerce_db"
-
-            - name: DB_USER
-              value: "ecommerce_user"
-
-            - name: DB_PASSWORD
-              value: "ecommerce_password"
+            - secretRef:
+                name: backend-db-secret
