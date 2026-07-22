@@ -5,6 +5,15 @@ import os
 app = Flask(__name__)
 
 
+# Root / Welcome Endpoint
+@app.route("/")
+def root():
+    return jsonify({
+        "message": "Ecommerce Backend is Running",
+        "status": "healthy"
+    }), 200
+
+
 # Kubernetes Health Check Endpoint
 @app.route("/health")
 def health():
@@ -31,7 +40,7 @@ def get_db_connection():
 def home():
     return jsonify({
         "message": "Welcome to E-Commerce Backend"
-    })
+    }), 200
 
 
 # Get All Products
@@ -39,7 +48,6 @@ def home():
 def get_products():
 
     connection = get_db_connection()
-
     cursor = connection.cursor()
 
     cursor.execute(
@@ -60,7 +68,7 @@ def get_products():
             "price": float(product[2])
         })
 
-    return jsonify(result)
+    return jsonify(result), 200
 
 
 # Create New Product
@@ -73,7 +81,6 @@ def create_product():
     price = data["price"]
 
     connection = get_db_connection()
-
     cursor = connection.cursor()
 
     cursor.execute(
