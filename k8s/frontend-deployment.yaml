@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ecommerce-frontend:v2
+          image: ecommerce-frontend:v3
           imagePullPolicy: IfNotPresent
 
           ports:
