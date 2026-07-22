@@ -21,7 +21,7 @@ spec:
       containers:
         - name: backend
 
-          image: ecommerce-backend:v2
+          image: ecommerce-backend:v3
 
           imagePullPolicy: IfNotPresent
 
