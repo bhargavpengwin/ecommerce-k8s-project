@@ -20,9 +20,7 @@ spec:
     spec:
       containers:
         - name: backend
-
           image: ecommerce-backend:v3
-
           imagePullPolicy: IfNotPresent
 
           ports:
@@ -34,3 +32,19 @@ spec:
 
             - secretRef:
                 name: backend-db-secret
+
+          # Checks if the application is alive
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          # Checks if the application is ready to receive traffic
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
