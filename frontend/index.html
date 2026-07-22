@@ -1,91 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KubeCart — E-Commerce Demo</title>
 
-    <title>E-Commerce App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    :root {
+        --ink: #12151c;
+        --ink-soft: #565c6b;
+        --paper: #f4f5f8;
+        --card: #ffffff;
+        --line: #e4e6ee;
+        --accent: #4a3aff;
+        --accent-soft: #eeecff;
+        --signal: #14b88a;
+        --signal-soft: #e3f9f1;
+        --price: #12151c;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
-            color: #333;
-        }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-        header {
-            background: #222;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+    body {
+        font-family: 'Inter', Arial, sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+    }
 
-        .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 20px;
-        }
+    /* ---------- Header ---------- */
 
-        h2 {
-            margin-bottom: 20px;
-        }
+    header {
+        background: var(--ink);
+        color: #fff;
+        padding: 48px 24px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
 
-        #products {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
+    header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(74,58,255,0.35), transparent 45%),
+            radial-gradient(circle at 85% 75%, rgba(20,184,138,0.28), transparent 45%);
+        pointer-events: none;
+    }
 
-        .product {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+    header .eyebrow {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        color: #b7bdd6;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        padding: 6px 14px;
+        border-radius: 999px;
+        margin-bottom: 20px;
+    }
 
-        .product h3 {
-            margin-bottom: 10px;
-        }
+    header .eyebrow .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--signal);
+        box-shadow: 0 0 0 4px rgba(20,184,138,0.2);
+    }
 
-        .price {
-            font-size: 20px;
-            font-weight: bold;
-        }
+    header h1 {
+        position: relative;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: clamp(32px, 5vw, 48px);
+        letter-spacing: -0.02em;
+    }
 
-        .loading {
-            color: #666;
-        }
+    header p {
+        position: relative;
+        margin-top: 10px;
+        color: #a7acc4;
+        font-size: 15px;
+        font-family: 'JetBrains Mono', monospace;
+    }
 
-        .error {
-            color: red;
-        }
-    </style>
+    /* ---------- Layout ---------- */
+
+    .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 28px;
+    }
+
+    .section-heading h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+    }
+
+    .section-heading span {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: var(--ink-soft);
+    }
+
+    #products {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 22px;
+    }
+
+    /* ---------- Product Card ---------- */
+
+    .product {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .product:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 32px rgba(18,21,28,0.10);
+        border-color: transparent;
+    }
+
+    .product-media {
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 46px;
+        position: relative;
+    }
+
+    .product-info {
+        padding: 18px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+    }
+
+    .product-category {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+    }
+
+    .product h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .product .desc {
+        font-size: 13px;
+        color: var(--ink-soft);
+        flex: 1;
+    }
+
+    .stock-badge {
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--signal);
+        background: var(--signal-soft);
+        padding: 4px 10px;
+        border-radius: 999px;
+    }
+
+    .stock-badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--signal);
+    }
+
+    .product-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 4px;
+    }
+
+    .price {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--price);
+    }
+
+    .add-btn {
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        background: var(--ink);
+        border: none;
+        padding: 9px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.18s ease, transform 0.12s ease;
+    }
+
+    .add-btn:hover {
+        background: var(--accent);
+    }
+
+    .add-btn:active {
+        transform: scale(0.96);
+    }
+
+    .add-btn.added {
+        background: var(--signal);
+    }
+
+    /* ---------- States ---------- */
+
+    .loading, .error {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+    }
+
+    .loading { color: var(--ink-soft); }
+    .error { color: #d9455f; }
+
+    .demo-note {
+        grid-column: 1 / -1;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: var(--ink-soft);
+        background: var(--accent-soft);
+        border: 1px dashed #c9c3ff;
+        border-radius: 10px;
+        padding: 10px 16px;
+        margin-bottom: 4px;
+    }
+
+    /* ---------- Toast ---------- */
+
+    #toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translate(-50%, 20px);
+        background: var(--ink);
+        color: #fff;
+        font-size: 13px;
+        font-family: 'JetBrains Mono', monospace;
+        padding: 12px 20px;
+        border-radius: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        z-index: 10;
+    }
+
+    #toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    /* ---------- Responsive ---------- */
+
+    @media (max-width: 480px) {
+        header { padding: 36px 18px 32px; }
+        .container { padding: 32px 16px 60px; }
+        #products { grid-template-columns: 1fr; }
+    }
+</style>
 </head>
 
 <body>
 
 <header>
-    <h1>My E-Commerce Store</h1>
-    <p>Kubernetes Demo Project</p>
+    <div class="eyebrow"><span class="dot"></span> server-store · pod healthy</div>
+    <h1>KubeCart</h1>
+    <p>a small storefront running on Kubernetes</p>
 </header>
 
 <div class="container">
 
-    <h2>Products</h2>
+    <div class="section-heading">
+        <h2>Products</h2>
+        <span id="product-count"></span>
+    </div>
 
     <div id="products">
-        <p class="loading">Loading products...</p>
+        <p class="loading">Loading products…</p>
     </div>
 
 </div>
 
+<div id="toast"></div>
+
 <script>
+
+// Dummy catalog used whenever the /api/products backend isn't reachable —
+// keeps the storefront browsable in demos, previews, and local dev.
+const DUMMY_PRODUCTS = [
+    { name: "Aria Wireless Headphones", category: "Audio",     price: 4999,  icon: "🎧", desc: "Over-ear, 30-hour battery, active noise cancelling." },
+    { name: "Nimbus Mechanical Keyboard", category: "Desk",    price: 6499,  icon: "⌨️", desc: "Hot-swappable switches, aluminium frame." },
+    { name: "Pulse Smart Watch",        category: "Wearable",  price: 8999,  icon: "⌚",  desc: "Heart-rate, sleep tracking, 5-day battery." },
+    { name: "Trailhead Backpack",       category: "Bags",      price: 2799,  icon: "🎒", desc: "20L, weatherproof, padded laptop sleeve." },
+    { name: "Halo Desk Lamp",           category: "Home",      price: 1899,  icon: "💡", desc: "Adjustable warmth, USB-C powered, touch dimmer." },
+    { name: "Basin Steel Bottle",       category: "Outdoor",   price: 899,   icon: "🧴", desc: "Insulated, keeps drinks cold for 24 hours." },
+    { name: "Drift Sunglasses",         category: "Accessory", price: 1499,  icon: "🕶️", desc: "Polarized lenses, lightweight acetate frame." },
+    { name: "Momentum Running Shoes",   category: "Footwear",  price: 5299,  icon: "👟", desc: "Responsive foam, breathable knit upper." }
+];
+
+const MEDIA_BG = [
+    "linear-gradient(135deg,#eef0ff,#f6f5ff)",
+    "linear-gradient(135deg,#e6f9f2,#f2fdf8)",
+    "linear-gradient(135deg,#fff1e6,#fff8f0)",
+    "linear-gradient(135deg,#eef6ff,#f5faff)"
+];
+
+function renderProducts(products, { isDemo = false } = {}) {
+
+    const productsContainer = document.getElementById("products");
+    productsContainer.innerHTML = "";
+
+    if (isDemo) {
+        const note = document.createElement("p");
+        note.className = "demo-note";
+        note.textContent = "Showing demo products — connect /api/products to replace with live data.";
+        productsContainer.appendChild(note);
+    }
+
+    document.getElementById("product-count").textContent = `${products.length} items`;
+
+    products.forEach((product, i) => {
+
+        const productElement = document.createElement("div");
+        productElement.className = "product";
+
+        productElement.innerHTML = `
+            <div class="product-media" style="background:${MEDIA_BG[i % MEDIA_BG.length]}">
+                ${product.icon || "🛍️"}
+            </div>
+            <div class="product-info">
+                <span class="product-category">${product.category || "General"}</span>
+                <h3>${product.name}</h3>
+                <p class="desc">${product.desc || ""}</p>
+                <span class="stock-badge"><span class="dot"></span>In stock</span>
+                <div class="product-footer">
+                    <span class="price">₹${product.price}</span>
+                    <button class="add-btn">Add to cart</button>
+                </div>
+            </div>
+        `;
+
+        productElement.querySelector(".add-btn").addEventListener("click", (e) => {
+            const btn = e.currentTarget;
+            btn.textContent = "Added ✓";
+            btn.classList.add("added");
+            showToast(`${product.name} added to cart`);
+            setTimeout(() => {
+                btn.textContent = "Add to cart";
+                btn.classList.remove("added");
+            }, 1400);
+        });
+
+        productsContainer.appendChild(productElement);
+    });
+}
+
+let toastTimer;
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+}
 
 async function loadProducts() {
 
@@ -99,37 +423,17 @@ async function loadProducts() {
 
         const products = await response.json();
 
-        const productsContainer =
-            document.getElementById("products");
+        if (!Array.isArray(products) || products.length === 0) {
+            throw new Error("Empty product list");
+        }
 
-        productsContainer.innerHTML = "";
-
-        products.forEach(product => {
-
-            const productElement =
-                document.createElement("div");
-
-            productElement.className = "product";
-
-            productElement.innerHTML = `
-                <h3>${product.name}</h3>
-                <p class="price">
-                    ₹${product.price}
-                </p>
-            `;
-
-            productsContainer.appendChild(productElement);
-
-        });
+        renderProducts(products);
 
     } catch (error) {
-
-        document.getElementById("products").innerHTML =
-            `<p class="error">
-                Unable to load products.
-            </p>`;
-
-        console.error(error);
+        // No live backend available — fall back to the dummy catalog
+        // so the page still demonstrates a full, responsive UI.
+        renderProducts(DUMMY_PRODUCTS, { isDemo: true });
+        console.warn("Using demo products:", error.message);
     }
 
 }
