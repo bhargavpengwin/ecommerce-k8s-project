@@ -33,6 +33,15 @@ spec:
             - secretRef:
                 name: backend-db-secret
 
+          # CPU and Memory Resources
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
           # Checks if the application is alive
           livenessProbe:
             httpGet:
