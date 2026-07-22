@@ -5,6 +5,15 @@ import os
 app = Flask(__name__)
 
 
+# Kubernetes Health Check Endpoint
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "healthy"
+    }), 200
+
+
+# Database Connection
 def get_db_connection():
     connection = psycopg2.connect(
         host=os.getenv("DB_HOST"),
@@ -17,6 +26,7 @@ def get_db_connection():
     return connection
 
 
+# Backend Welcome API
 @app.route("/api")
 def home():
     return jsonify({
@@ -24,6 +34,7 @@ def home():
     })
 
 
+# Get All Products
 @app.route("/products", methods=["GET"])
 def get_products():
 
@@ -52,6 +63,7 @@ def get_products():
     return jsonify(result)
 
 
+# Create New Product
 @app.route("/products", methods=["POST"])
 def create_product():
 
@@ -82,6 +94,7 @@ def create_product():
     }), 201
 
 
+# Start Flask Application
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
